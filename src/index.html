@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doomsday Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="layout">
+        <section class="card">
+          <h1>Doomsday Explorer</h1>
+          <p>Calculate weekday using Conway's Doomsday algorithm (Gregorian, 1700-2100).</p>
+
+          <div class="modes">
+            <label><input type="radio" name="mode" value="beginner" checked /> Beginner</label>
+            <label><input type="radio" name="mode" value="expert" /> Expert</label>
+          </div>
+
+          <form id="date-form">
+            <label for="target-date">Target date</label>
+            <input
+              id="target-date"
+              type="date"
+              min="1700-01-01"
+              max="2100-12-31"
+              value="2026-02-08"
+              required
+            />
+            <button type="submit">Compute</button>
+            <button id="random-date" type="button">Random Date</button>
+          </form>
+
+          <p id="result">Pick a date and compute.</p>
+          <section id="expert-challenge" hidden>
+            <label for="weekday-guess">Your guess</label>
+            <select id="weekday-guess">
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+            <button id="check-guess" type="button">Check Guess</button>
+            <p id="guess-feedback"></p>
+          </section>
+          <button id="reveal" type="button" hidden>Reveal Steps</button>
+          <section id="details"></section>
+          <section id="visuals">
+            <div class="visual-panel">
+              <h2>Doomsday Reference</h2>
+              <p id="reference-title">Month anchors for selected year</p>
+              <ul id="reference-list"></ul>
+            </div>
+            <div class="visual-panel" id="month-view-panel">
+              <h2>Month View</h2>
+              <p id="calendar-title">No date selected</p>
+              <div id="calendar-grid" aria-live="polite"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="card reference-card" aria-labelledby="algorithm-reference-title">
+          <h2 id="algorithm-reference-title">Algorithm Reference (Odd +11)</h2>
+          <p>Static guide for the year doomsday step and final weekday combination.</p>
+
+          <div class="algo-grid">
+            <div class="algo-panel">
+              <h3>Flow</h3>
+              <div class="flow">
+                <div class="flow-step">1) y = last two digits of year</div>
+                <div class="flow-arrow">v</div>
+                <div class="flow-step">2) If y is odd, y = y + 11</div>
+                <div class="flow-arrow">v</div>
+                <div class="flow-step">3) y = floor(y / 2)</div>
+                <div class="flow-arrow">v</div>
+                <div class="flow-step">4) If y is odd, y = y + 11</div>
+                <div class="flow-arrow">v</div>
+                <div class="flow-step">5) offset = 7 - (y mod 7)</div>
+                <div class="flow-arrow">v</div>
+                <div class="flow-step">6) yearDoomsday = (centuryAnchor + offset) mod 7</div>
+              </div>
+            </div>
+
+            <div class="algo-panel">
+              <h3>Century Anchors</h3>
+              <table class="steps-table">
+                <thead>
+                  <tr>
+                    <th>Century</th>
+                    <th>Anchor Index</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1600s</td><td>2 (Tuesday)</td></tr>
+                  <tr><td>1700s</td><td>0 (Sunday)</td></tr>
+                  <tr><td>1800s</td><td>5 (Friday)</td></tr>
+                  <tr><td>1900s</td><td>3 (Wednesday)</td></tr>
+                  <tr><td>2000s</td><td>2 (Tuesday)</td></tr>
+                  <tr><td>2100s</td><td>0 (Sunday)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="algo-panel">
+              <h3>Combine with Month Anchor</h3>
+              <table class="steps-table">
+                <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>Formula</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Leap-year check</td>
+                    <td>Leap if (year mod 400 = 0) or (year mod 4 = 0 and year mod 100 != 0)</td>
+                  </tr>
+                  <tr>
+                    <td>Month doomsday date</td>
+                    <td>Use fixed month anchor; Jan/Feb anchors shift in leap years</td>
+                  </tr>
+                  <tr>
+                    <td>Day offset</td>
+                    <td>(targetDay - monthDoomsdayDate) mod 7</td>
+                  </tr>
+                  <tr>
+                    <td>Final weekday index</td>
+                    <td>(yearDoomsday + dayOffset) mod 7</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p class="algo-note">Weekday index mapping: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
